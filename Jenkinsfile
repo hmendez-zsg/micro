@@ -46,7 +46,7 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject("${PRJ_DEV}") {
                             def build = openshift.selector("bc", APP_NAME);
-                            def startedBuild = build.startBuild(APP_NAME);
+                            def startedBuild = build.startBuild();
                             startedBuild.logs('-f');
                             echo "${PRJ_DEV} - ${APP_NAME} build status: ${startedBuild.object().status}";
                             openshift.tag("${PRJ_DEV}/${APP_NAME}:latest", "${PRJ_DEV}/${APP_NAME}:promoteQA")
