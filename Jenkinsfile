@@ -1,3 +1,5 @@
+def applicationName = "micro";
+
 pipeline {
     agent {
         label 'maven'
@@ -5,7 +7,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Hello build'
+                sh script: "cd ${applicationName} && mvn clean package"
             }
         }
     }
