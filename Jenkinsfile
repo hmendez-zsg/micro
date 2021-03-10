@@ -1,5 +1,3 @@
-def applicationName = "micro";
-
 pipeline {
     agent any
     options {
@@ -46,11 +44,29 @@ pipeline {
             steps {
                 script {
                     openshift.withCluster() {
-                        openshift.withProject('zsg-dev-micro') {
-                            def build = openshift.selector("bc", applicationName);
-                            def startedBuild = build.startBuild();
+                        openshift.withProject("${PRJ_DEV}") {
+                            def build = openshift.selector("bc", APP_NAME);
+                            def startedBuild = build.startBuild(APP_NAME);
                             startedBuild.logs('-f');
-                            echo "${applicationName} build status: ${startedBuild.object().status}";
+                            echo "${PRJ_DEV} - ${APP_NAME} build status: ${startedBuild.object().status}";
+                            openshift.tag("${PRJ_DEV}/${APP_NAME}:latest", "${PRJ_DEV}/${APP_NAME}:promoteQA")
+                        }
+                    }
+                }
+            }
+        }
+        stage("Test Dev Build Service") {
+            echo "Test service"
+        }
+        stage("Promote to QA") {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject("${PRJ_QA}") {
+                            if (openshift.selector("dc", APP_NAME).exists()) {
+                                echo "deploying to QA"
+                                openshift.selector("dc", APP_NAME).deploy();
+                            }
                         }
                     }
                 }
