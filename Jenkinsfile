@@ -49,7 +49,6 @@ pipeline {
                             def startedBuild = build.startBuild();
                             startedBuild.logs('-f');
                             echo "${PRJ_DEV} - ${APP_NAME} build status: ${startedBuild.object().status}";
-                            openshift.tag("${PRJ_DEV}/${APP_NAME}:latest", "${PRJ_DEV}/${APP_NAME}:promoteQA")
                         }
                     }
                 }
@@ -65,10 +64,9 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject("${PRJ_QA}") {
-                            if (openshift.selector("dc", APP_NAME).exists()) {
-                                echo "deploying to QA"
-                                openshift.selector("dc", APP_NAME).deploy();
-                            }
+                            openshift.tag("${PRJ_DEV}/${APP_NAME}:latest", "${PRJ_QA}/${APP_NAME}:promoteQA");
+                            def app = openshift.newApp("${APP_NAME}:promoteQA", "--name=${APP_NAME}");
+                            app.narrow("svc").expose();
                         }
                     }
                 }
