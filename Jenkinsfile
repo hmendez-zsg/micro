@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh script: "cd ${applicationName} && mvn clean package"
+                sh script: "mvn clean package"
             }
         }
     }
