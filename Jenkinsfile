@@ -5,18 +5,13 @@ pipeline {
         label 'maven'
     }
     stages {
-        stage('Build') {
-            steps {
-                sh script: "mvn clean package"
-            }
-        }
-        stage('S2I Build') {
+        stage('S2I Build - Dev') {
             steps {
                 script {
                     openshift.withCluster() {
-                        openshift.withProject() {
+                        openshift.withProject('zsg-dev-micro') {
                             def build = openshift.selector("bc", applicationName);
-                            def startedBuild = build.startBuild("--from-file=\"./target/${applicationName}-0.0.1.jar\"");
+                            def startedBuild = build.startBuild();
                             startedBuild.logs('-f');
                             echo "${applicationName} build status: ${startedBuild.object().status}";
                         }
