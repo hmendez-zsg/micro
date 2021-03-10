@@ -68,6 +68,7 @@ pipeline {
                             // openshift.selector("dc", APP_NAME).rollout().latest();
                             openshift.tag("${PRJ_DEV}/${APP_NAME}:latest", "${PRJ_QA}/${APP_NAME}:promoteQA");
                             def app = openshift.newApp("${APP_NAME}:promoteQA", "--name=${APP_NAME}");
+                            app.narrow("svc").expose();
                         }
                     }
                 }
