@@ -56,7 +56,9 @@ pipeline {
             }
         }
         stage("Test Dev Build Service") {
-            echo "Test service"
+            steps {
+                echo "Test service"
+            }
         }
         stage("Promote to QA") {
             steps {
